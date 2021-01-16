@@ -28,6 +28,8 @@ const getImage = (req, res) => {
       }
     } = req;
 
+    console.log(req.session);
+
     let image;
     minioClient.getObject('europetrip', params.id, (err, dataStream) => {
       if (err) {

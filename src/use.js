@@ -1,6 +1,7 @@
 import bodyParser from 'body-parser';
 import fileUpload from 'express-fileupload';
 import session from 'express-session';
+import passwords from '../passwords';
 
 export default function (app) => {
   app.use(fileUpload());
