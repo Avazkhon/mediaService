@@ -1,3 +1,4 @@
+import sharp from 'sharp';
 import minioClient from '../minioClient.js';
 
 const imageUpload = (req, res) => {
@@ -19,28 +20,43 @@ const imageUpload = (req, res) => {
 
 
 const getImage = (req, res) => {
-  const {
-    params
-  } = req;
+  try {
+    const {
+      params,
+      query: {
+        resize,
+      }
+    } = req;
 
-  let image;
-  minioClient.getObject('europetrip', params.id, (err, dataStream) => {
-    if (err) {
-      return res.status(500).json({error: err.toString()})
-    }
+    let image;
+    minioClient.getObject('europetrip', params.id, (err, dataStream) => {
+      if (err) {
+        return res.status(500).json({error: err.toString()})
+      }
 
-    dataStream.on('data', (chunk) => {
-        image = !image ? new Buffer.from(chunk) : Buffer.concat([image, chunk])
-    })
+      dataStream.on('data', (chunk) => {
+          image = !image ? new Buffer.from(chunk) : Buffer.concat([image, chunk])
+      })
 
-    dataStream.on('end', () => {
-      res.write(image);
-      res.end();
+        var sizes = resize.split('x');
+      dataStream.on('end', () => {
+        sharp(image)
+        .rotate()
+        .resize(+sizes[0] || null, +sizes[1] || null)
+        .toBuffer()
+        .then((data) => {
+          res.write(data);
+          res.end();
+         })
+      });
+
+      dataStream.on('error', (error) => {
+        res.status(500).json({ error: error.toString() })
+      })
     })
-    dataStream.on('error', (error) => {
-      res.status(500).json({ error: error.toString() })
-    })
-  })
+  } catch (error) {
+    res.status(500).json({ error: error.toString() })
+  }
 }
 
 export default {
