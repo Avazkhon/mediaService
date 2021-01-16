@@ -6,9 +6,11 @@ import image from './controller/image.js';
 const app = express();
 
 app.route('/fileUpload')
-  .post(image.imageUpload)
+  .post(image.imageUpload);
 
-app.get('/image/:id', image.getImage)
+app.route('/image/:id')
+  .get(image.getImage)
+  .delete(image.removeImage);
 
 
 app.listen(8082, () => {

@@ -24,7 +24,7 @@ const getImage = (req, res) => {
     const {
       params,
       query: {
-        resize,
+        resize = '',
       }
     } = req;
 
@@ -59,7 +59,27 @@ const getImage = (req, res) => {
   }
 }
 
+const removeImage = (req, res) => {
+  try {
+    const {
+      params,
+    } = req;
+
+    minioClient.removeObject('europetrip', params.id, function(err) {
+      if (err) {
+        return res.status(500).json({ error: err })
+      }
+      res.status(200).json({ error: 'Removed the object' })
+    })
+
+
+  } catch (error) {
+    res.status(500).json({ error: error.toString()})
+  }
+}
+
 export default {
   imageUpload,
-  getImage
+  getImage,
+  removeImage
 }
