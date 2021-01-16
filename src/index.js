@@ -5,10 +5,10 @@ import image from './controller/image.js';
 
 const app = express();
 
-app.route('/fileUpload')
+app.route('/media/fileUpload')
   .post(image.imageUpload);
 
-app.route('/image/:id')
+app.route('/media/image/:id')
   .get(image.getImage)
   .delete(image.removeImage);
 
