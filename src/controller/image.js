@@ -9,7 +9,7 @@ const imageUpload = (req, res) => {
         'example': 5678
     }
 
-    minioClient.putObject('europetrip', req.files.avatar.name, req.files.avatar.data, metaData,  function(err, etag) {
+    minioClient.putObject('europetrip', req.files.image.name, req.files.image.data, metaData,  function(err, etag) {
       if (err) return res.status(500).json({error: err.toString()})
       res.status(200).json({ message: 'File uploaded successfully'})
     });
