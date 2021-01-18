@@ -1,9 +1,10 @@
 import bodyParser from 'body-parser';
 import fileUpload from 'express-fileupload';
 import session from 'express-session';
-import passwords from '../passwords';
+import passwords from '../password.js';
 
-export default function (app) => {
+
+export default function (app) {
   app.use(fileUpload());
   app.use(bodyParser.json());
   app.use(bodyParser.urlencoded({
