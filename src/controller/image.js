@@ -1,4 +1,5 @@
 import sharp from 'sharp';
+import { v4 as uuidv4 } from 'uuid';
 import minioClient from '../minioClient.js';
 
 const imageUpload = (req, res) => {
@@ -9,9 +10,10 @@ const imageUpload = (req, res) => {
         'example': 5678
     }
 
-    minioClient.putObject('europetrip', req.files.image.name, req.files.image.data, metaData,  function(err, etag) {
+    const imageName = uuidv4() + ':' + req.files.image.name;
+    minioClient.putObject('europetrip', imageName, req.files.image.data, metaData,  function(err, etag) {
       if (err) return res.status(500).json({error: err.toString()})
-      res.status(200).json({ message: 'File uploaded successfully'})
+      res.status(200).json({ message: 'File uploaded successfully', imageName })
     });
   } catch (error) {
     return res.status(500).json({error: error.toString()})
