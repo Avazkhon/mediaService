@@ -4,6 +4,7 @@ import fileUpload from 'express-fileupload';
 import session from 'express-session';
 import mongoStore from 'connect-mongo';
 import mongoose from 'mongoose';
+import cookieParser from 'cookie-parser';
 
 
 
@@ -26,7 +27,7 @@ app.use((req, res, next) => {
   res.header("Access-Control-Allow-Credentials", true);
   next();
 });
-
+app.use(cookieParser());
 app.use(fileUpload());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({
