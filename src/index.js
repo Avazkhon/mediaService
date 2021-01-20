@@ -53,7 +53,8 @@ app.route('/media/image/:id')
   .get(image.getImage)
   .delete(image.removeImage);
 
-app.get('/media/albums/:userId', albums.getAlums);
+app.get('/media/albums/:userId', albums.getAlbums);
+app.get('/media/album/:userId/:albumId', albums.getAlbum);
 
 
 db.connect((err) => {

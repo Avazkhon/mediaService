@@ -1,10 +1,11 @@
 import modelAlbum from '../model/album/index.js';
 
 export default {
-  getAlums
+  getAlbums,
+  getAlbum
 }
 
-function getAlums (req, res) {
+function getAlbums (req, res) {
   try {
     const {
       userId
@@ -18,5 +19,23 @@ function getAlums (req, res) {
       })
   } catch (error) {
     res.status(200).json({ error: toString() })
+  }
+}
+
+function getAlbum (req, res) {
+  try {
+    const {
+      userId,
+      albumId
+    } = req.params;
+    return modelAlbum.findOne({ userId })
+      .then((albums) => {
+        res.status(200).json(albums.albums.find((album) => album._id == albumId))
+      })
+      .catch((error) => {
+        res.status(500).json({ error: toString() })
+      })
+  } catch (error) {
+    res.status(500).json({ error: toString() })
   }
 }
