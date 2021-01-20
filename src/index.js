@@ -11,6 +11,7 @@ import cookieParser from 'cookie-parser';
 import db from './db.js';
 
 import image from './controller/image.js';
+import albums from './controller/albums.js';
 
 import passwords from '../password.js';
 
@@ -51,6 +52,8 @@ app.route('/media/fileUpload')
 app.route('/media/image/:id')
   .get(image.getImage)
   .delete(image.removeImage);
+
+app.get('/media/albums/:userId', albums.getAlums);
 
 
 db.connect((err) => {
