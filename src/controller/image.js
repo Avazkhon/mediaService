@@ -1,6 +1,7 @@
 import sharp from 'sharp';
 import { v4 as uuidv4 } from 'uuid';
 import minioClient from '../minioClient.js';
+import modelAlbum from '../model/album/index.js';
 
 const imageUpload = (req, res) => {
   try {
@@ -11,8 +12,37 @@ const imageUpload = (req, res) => {
     }
 
 const imageName = uuidv4() + ':' + req.files.image.name;
-    minioClient.putObject('europetrip', imageName, req.files.image.data, metaData,  function(err, etag) {
+    minioClient.putObject('europetrip', imageName, req.files.image.data, metaData, async function(err, etag) {
       if (err) return res.status(500).json({error: err.toString()})
+      const hasAlbums = await modelAlbum.findOne(
+        { userId: req.cookies.userId },
+      );
+      if (hasAlbums) {
+        modelAlbum.findOneAndUpdate(
+          {
+            userId: req.cookies.userId
+          },
+          {
+            $push: {
+              'albums.$[album].images': imageName
+            }
+          },
+          {
+            new: true,
+            arrayFilters: [{ 'album._id': hasAlbums.albums[0]._id }]
+          }
+        )
+      } else {
+         modelAlbum.create(
+          {
+            userId: req.cookies.userId,
+            albums: [{
+              images: imageName
+            }]
+          }
+        )
+      }
+
       res.status(200).json({ message: 'File uploaded successfully', imageName })
     });
   } catch (error) {
@@ -21,7 +51,7 @@ const imageName = uuidv4() + ':' + req.files.image.name;
 }
 
 
-const getImage = (req, res) => {
+const getImage = async (req, res) => {
   try {
     const {
       params,
@@ -29,8 +59,6 @@ const getImage = (req, res) => {
         resize = '',
       }
     } = req;
-
-    console.log(req.cookies.userId);
 
     let image;
     minioClient.getObject('europetrip', params.id, (err, dataStream) => {

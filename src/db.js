@@ -11,7 +11,9 @@ const options = {
   poolSize: 10, // Maintain up to 10 socket connection
 };
 
-const uri = `mongodb+srv://${passwords.nameAndPasswordMongoDB}@cluster0-rzc7k.mongodb.net/${process.env.NAME_DB_PROJECT}?retryWrites=true&w=majority`;
+const NODE_ENV = process.env.NODE_ENV || 'development';
+const nameDB = (NODE_ENV === 'production') ? 'album' : 'albumDev'
+const uri = `mongodb+srv://${passwords.nameAndPasswordMongoDB}@cluster0-rzc7k.mongodb.net/${nameDB}?retryWrites=true&w=majority`;
 mongoose.set('useFindAndModify', false);
 async function connect(done) {
   await mongoose.connect(uri, options)
