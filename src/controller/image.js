@@ -10,9 +10,13 @@ const imageUpload = (req, res) => {
         'X-Amz-Meta-Testing': 1234,
         'example': 5678
     }
+    if (!req.cookies.userId) {
+      return res.status(400).json({ message: 'Пользователь не авторизован!'})
+    }
 
-const imageName = uuidv4() + ':' + req.files.image.name;
-    minioClient.putObject('facebetting', imageName, req.files.image.data, metaData, async function(err, etag) {
+const imageName = req.files.image.name.trim();
+const imageId = uuidv4() + ':' + imageName;
+    minioClient.putObject('facebetting', imageId, req.files.image.data, metaData, async function(err, etag) {
       if (err) return res.status(500).json({error: err.toString()})
       const hasAlbums = await modelAlbum.findOne(
         { userId: req.cookies.userId },
@@ -24,7 +28,7 @@ const imageName = uuidv4() + ':' + req.files.image.name;
           },
           {
             $push: {
-              'albums.$[album].images': imageName
+              'albums.$[album].images': { name: imageName, id: imageId }
             }
           },
           {
@@ -37,13 +41,13 @@ const imageName = uuidv4() + ':' + req.files.image.name;
           {
             userId: req.cookies.userId,
             albums: [{
-              images: imageName
+              images: { name: imageName, id: imageId }
             }]
           }
         )
       }
 
-      res.status(200).json({ message: 'File uploaded successfully', imageName })
+      res.status(200).json({ message: 'File uploaded successfully', imageName: imageId })
     });
   } catch (error) {
     return res.status(500).json({error: error.toString()})

@@ -3,11 +3,20 @@ import mongodb from'mongodb';
 import moment from'moment-timezone';
 
 const Schema = mongoose.Schema;
+const image = new Schema(
+  {
+    name: { type: String, required: true },
+    createDate: { type: Date, default: moment().utc().format() },
+    id: { type: String, required: true }
+  },
+  { strict: true }
+);
+
 const album = new Schema(
   {
     name: { type: String, default: 'main' },
     createDate: { type: Date, default: moment().utc().format() },
-    images: [{ type: String, required: true }]
+    images: [ image ]
   },
   { strict: true }
 );
