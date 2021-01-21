@@ -12,7 +12,7 @@ const imageUpload = (req, res) => {
     }
 
 const imageName = uuidv4() + ':' + req.files.image.name;
-    minioClient.putObject('europetrip', imageName, req.files.image.data, metaData, async function(err, etag) {
+    minioClient.putObject('FaceBetting', imageName, req.files.image.data, metaData, async function(err, etag) {
       if (err) return res.status(500).json({error: err.toString()})
       const hasAlbums = await modelAlbum.findOne(
         { userId: req.cookies.userId },
@@ -61,7 +61,7 @@ const getImage = async (req, res) => {
     } = req;
 
     let image;
-    minioClient.getObject('europetrip', params.id, (err, dataStream) => {
+    minioClient.getObject('FaceBetting', params.id, (err, dataStream) => {
       if (err) {
         return res.status(500).json({error: err.toString()})
       }
@@ -97,7 +97,7 @@ const removeImage = (req, res) => {
       params,
     } = req;
 
-    minioClient.removeObject('europetrip', params.id, function(err) {
+    minioClient.removeObject('FaceBetting', params.id, function(err) {
       if (err) {
         return res.status(500).json({ error: err })
       }
